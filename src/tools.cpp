@@ -54,12 +54,11 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   float vx = x_state(2);
   float vy = x_state(3);
 
-  // TODO: YOUR CODE HERE 
   float squareSum = px*px + py*py;
   float root = sqrt(squareSum);
   float root_3 = sqrt(squareSum * squareSum);
   float subs = vx*py - vy*px;
-  
+
   // check division by zero
   if (squareSum == 0)
   {
