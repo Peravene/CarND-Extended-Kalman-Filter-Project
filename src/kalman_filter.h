@@ -63,6 +63,13 @@ class KalmanFilter {
 
   // measurement covariance matrix
   Eigen::MatrixXd R_;
+
+private:
+  /**
+   * The common part of extended and normal update step
+   * @param z The measurement at k+1
+   */
+  void UpdateCommon(const Eigen::VectorXd &z);
 };
 
 #endif // KALMAN_FILTER_H_
