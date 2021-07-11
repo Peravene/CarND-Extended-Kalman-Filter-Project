@@ -56,7 +56,7 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 
   float squareSum = px*px + py*py;
   float root = sqrt(squareSum);
-  float root_3 = sqrt(squareSum * squareSum);
+  float root_3 = squareSum * root;
   float subs = vx*py - vy*px;
 
   // check division by zero
@@ -69,7 +69,7 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   // compute the Jacobian matrix
     Hj << px/root, py/root, 0,0,
             -py/squareSum, px/squareSum, 0, 0,
-            py*subs/root_3, px*-subs/root_3, py/root, py/root;
+            py*subs/root_3, px*-subs/root_3, px/root, py/root;
             
             
   return Hj;

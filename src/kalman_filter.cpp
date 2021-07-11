@@ -1,5 +1,5 @@
 #include "kalman_filter.h"
-#include "tools.h"
+#include <iostream>
 
 
 using Eigen::MatrixXd;
@@ -57,16 +57,37 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
    */
     VectorXd x_polar = VectorXd(3);
     float radius = sqrt(x_[0]*x_[0] + x_[1]*x_[1]);
+    
+  // check division by zero
+  if (radius == 0)
+  {
+      std::cout << "UpdateEKF () - Error - Division by 0:" << std::endl;
+      return;
+  }
+
     x_polar << radius, 
-              atan(x_[1]/x_[0]),
+              atan2(x_[1],x_[0]),
               (x_[0]*x_[2]+x_[1]*x_[3])/radius;
 
     VectorXd y = z - x_polar;
 
-    Tools tools;
-    MatrixXd Hj = tools.CalculateJacobian(x_);
-    MatrixXd Ht = Hj.transpose();
-    MatrixXd S = Hj * P_ * Ht + R_;
+    // In C++, atan2() returns values between -pi and pi. 
+    // When calculating phi in y = z - h(x) for radar measurements, 
+    // the resulting angle phi in the y vector should be adjusted so that it is between -pi and pi. 
+    // The Kalman filter is expecting small angle values between the range -pi and pi. 
+    // HINT: when working in radians, you can add 2π or subtract 2π 
+    // until the angle is within the desired range.
+
+    while (y(1)>M_PI){
+      y(1) -= 2*M_PI;
+    }
+
+    while (y(1)<-M_PI){
+      y(1) += 2*M_PI;
+    }
+
+    MatrixXd Ht = H_.transpose();
+    MatrixXd S = H_ * P_ * Ht + R_;
     MatrixXd Si = S.inverse();
     MatrixXd K =  P_ * Ht * Si;
 
@@ -74,5 +95,5 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     x_ = x_ + (K * y);
     long x_size = x_.size();
     MatrixXd I = MatrixXd::Identity(x_size, x_size);
-    P_ = (I - K * Hj) * P_;
+    P_ = (I - K * H_) * P_;
 }
