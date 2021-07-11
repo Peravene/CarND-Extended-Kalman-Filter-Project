@@ -62,16 +62,18 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   /**
    * update the state by using Extended Kalman Filter equations
    */
-    VectorXd x_polar = VectorXd(3);
+
     float radius = sqrt(x_[0]*x_[0] + x_[1]*x_[1]);
     
-  // check division by zero
-  if (radius == 0)
-  {
-      std::cout << "UpdateEKF () - Error - Division by 0:" << std::endl;
-      return;
-  }
+    // check division by zero
+    if (radius == 0)
+    {
+        std::cout << "UpdateEKF () - Error - Division by 0:" << std::endl;
+        return;
+    }
 
+    // convert x from kartesian to polar
+    VectorXd x_polar = VectorXd(3);
     x_polar << radius, 
               atan2(x_[1],x_[0]),
               (x_[0]*x_[2]+x_[1]*x_[3])/radius;
