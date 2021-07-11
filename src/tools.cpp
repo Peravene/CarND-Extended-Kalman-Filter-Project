@@ -65,12 +65,11 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
       std::cout << "CalculateJacobian () - Error - Division by 0:" << std::endl;
       return Hj;
   }
-  
+
   // compute the Jacobian matrix
     Hj << px/root, py/root, 0,0,
             -py/squareSum, px/squareSum, 0, 0,
             py*subs/root_3, px*-subs/root_3, px/root, py/root;
-            
-            
+
   return Hj;
 }
